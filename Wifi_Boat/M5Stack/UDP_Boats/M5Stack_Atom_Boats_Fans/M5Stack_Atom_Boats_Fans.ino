@@ -12,7 +12,7 @@ int Motor1Channel = 0;
 int Motor2Channel = 1;
 int resolution = 8;
 int superspeed = 1;
-
+#define BRIGHTNESS_LED 0xf0
 extern const unsigned char AtomImageData[375 + 2];
 
 uint8_t DisBuff[2 + 5 * 5 * 3];
@@ -78,13 +78,15 @@ void parseMSG() {
     if (botL == 1) superspeed = 1;
     if (botR == 1) superspeed = 2;
     // update motors
-    controlMotors(posLY*superspeed,posRY*superspeed);
+    //controlMotors(posLY*superspeed,posRY*superspeed);
+    controlMotors((posRY+posRX)*superspeed,(posRY-posRX)*superspeed);
+    //controlMotors(int((posRY+posRX)*superspeed),int((posRY-posRX)*superspeed));
 }
 void setup()
 {
   M5.begin(true, false, true);
   Serial.begin(115200);
-  setBuff(0x20, 0x00, 0x00);
+  setBuff(BRIGHTNESS_LED, 0x00, 0x00);
   M5.dis.displaybuff(DisBuff);
   // init pwm
   ledcSetup(Motor1Channel, freq, resolution);
@@ -114,7 +116,7 @@ void setup()
     delay(500);
     Serial.print(".");
   }
-  setBuff(0x00, 0x20, 0x00);
+  setBuff(0x00, BRIGHTNESS_LED, 0x00);
   M5.dis.displaybuff(DisBuff);
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
@@ -138,7 +140,7 @@ void loop()
   //problems whith connection
   if ( WiFi.status() != WL_CONNECTED )
   {
-    setBuff(0x20, 0x00, 0x00);
+    setBuff(BRIGHTNESS_LED, 0x00, 0x00);
     M5.dis.displaybuff(DisBuff);
     controlMotors(0,0);
     Serial.println( "|" );
@@ -154,7 +156,7 @@ void loop()
     }
     Serial.print( "Connected " );
     Serial.println( WiFi.localIP() );
-    setBuff(0x00, 0x20, 0x00);
+    setBuff(0x00, BRIGHTNESS_LED, 0x00);
     M5.dis.displaybuff(DisBuff);
   }
   static unsigned long sendMillis = 0;
@@ -173,12 +175,12 @@ void loop()
       DisBuff[0] = 0x05;
       DisBuff[1] = 0x05;
       if (rssi/(i+1) < -5){
-        DisBuff[2 + i * 3 + 0] = 0x20;
+        DisBuff[2 + i * 3 + 0] = BRIGHTNESS_LED;
         DisBuff[2 + i * 3 + 1] = 0x00;
         DisBuff[2 + i * 3 + 2] = 0x00;
       }else{
         DisBuff[2 + i * 3 + 0] = 0x00;
-        DisBuff[2 + i * 3 + 1] = 0x20;
+        DisBuff[2 + i * 3 + 1] = BRIGHTNESS_LED;
         DisBuff[2 + i * 3 + 2] = 0x00;
       }
     }
