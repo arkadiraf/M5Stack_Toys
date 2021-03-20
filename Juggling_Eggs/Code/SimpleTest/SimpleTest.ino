@@ -4,7 +4,7 @@
 #define LED_PIN G0
 #define LED_COUNT  15
 // NeoPixel brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 150 // should not exceed 150, single color draw at 350 ma (max output limit of 400 ma SGM6603 datasheet)
+#define BRIGHTNESS 150 // should not exceed 150, single color draw at 250-300 ma (max output limit of 400 ma SGM6603 datasheet)
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // the setup routine runs once when M5StickC starts up
@@ -12,53 +12,46 @@ void setup() {
   
   // initialize the M5StickC object
   M5.begin();
-
+  SetChargingCurrent(6); //set 500ma charging
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
 
-//  // Fill along the length of the strip in various colors...
-//  colorWipe(strip.Color(255,   0,   0)     , 50); // Red
-//  colorWipe(strip.Color(  0, 255,   0)     , 50); // Green
-//  colorWipe(strip.Color(  0,   0, 255)     , 50); // Blue
- 
-//  // Lcd display
-//  M5.Lcd.fillScreen(WHITE);
-//  delay(500);
-//  M5.Lcd.fillScreen(RED);
-//  delay(500);
-//  M5.Lcd.fillScreen(GREEN);
-//  delay(500);
-//  M5.Lcd.fillScreen(BLUE);
-//  delay(500);
-//  M5.Lcd.fillScreen(BLACK);
-//  delay(500);
-
   // text print
   M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.setCursor(0, 10);
   M5.Lcd.setTextColor(WHITE);
   M5.Lcd.setTextSize(1);
+  M5.Lcd.setCursor(10, 10);
   M5.Lcd.printf("rainbow!");
+  M5.Lcd.setCursor(10,25);
+  M5.Lcd.printf("%.2fV",M5.Axp.GetBatVoltage());
+  M5.Lcd.setCursor(10,40);
+  M5.Lcd.printf("%.2fmA",M5.Axp.GetBatCurrent());
   rainbow(5);             // Flowing rainbow cycle along the whole strip
-
 }
 
 // the loop routine runs over and over again forever
 void loop(){
   M5.update();
-  M5.Lcd.fillScreen(WHITE);
-  delay(500);
-  // Fill along the length of the strip in various colors...
-  M5.Lcd.fillScreen(RED);
   colorWipe(strip.Color(255,   0,   0)     , 100); // Red
-  M5.Lcd.fillScreen(GREEN);
+  updateScreen();
   colorWipe(strip.Color(  0, 255,   0)     , 100); // Green
-  M5.Lcd.fillScreen(BLUE);
+  updateScreen();
   colorWipe(strip.Color(  0,   0, 255)     , 100); // Blue
+  updateScreen();
 }
 
-
+void updateScreen(){
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.setTextColor(WHITE);
+  M5.Lcd.setTextSize(1);
+  M5.Lcd.setCursor(10, 10);
+  M5.Lcd.printf("Battery!");
+  M5.Lcd.setCursor(10,25);
+  M5.Lcd.printf("%.2fV",M5.Axp.GetBatVoltage());
+  M5.Lcd.setCursor(10,40);
+  M5.Lcd.printf("%.2fmA",M5.Axp.GetBatCurrent());
+}
 // Some functions of our own for creating animated effects -----------------
 
 // Fill strip pixels one after another with a color. Strip is NOT cleared
@@ -136,3 +129,11 @@ void theaterChaseRainbow(int wait) {
     }
   }
 }
+
+void SetChargingCurrent( uint8_t CurrentLevel )
+{
+  Wire1.beginTransmission(0x34);
+  Wire1.write(0x33);
+  Wire1.write(0xC0 | ( CurrentLevel & 0x0f));
+  Wire1.endTransmission();
+} 
