@@ -1,0 +1,7 @@
+esp wifi
+//https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
+// SimpleWiFiServer example:  WiFi Web Server LED Blink
+
+Esp web server
+https://randomnerdtutorials.com/esp32-esp8266-plot-chart-web-server/
+https://github.com/me-no-dev/ESPAsyncWebServer
