@@ -4,7 +4,7 @@
 #define LED_PIN G0
 #define LED_COUNT  15
 // NeoPixel brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 150 // should not exceed 150, single color draw at 250-300 ma (max output limit of 400 ma SGM6603 datasheet)
+#define BRIGHTNESS 100 // should not exceed 150, single color draw at 250-300 ma (max output limit of 400 ma SGM6603 datasheet)
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // the setup routine runs once when M5StickC starts up
@@ -12,7 +12,8 @@ void setup() {
   
   // initialize the M5StickC object
   M5.begin();
-  SetChargingCurrent(6); //set 500ma charging
+  M5.Axp.SetChargeCurrent(CURRENT_450MA);
+  M5.Axp.EnableCoulombcounter();
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
@@ -33,12 +34,21 @@ void setup() {
 // the loop routine runs over and over again forever
 void loop(){
   M5.update();
-  colorWipe(strip.Color(255,   0,   0)     , 100); // Red
+  colorWipe(strip.Color(255,   0,   0)     , 15); // Red
   updateScreen();
-  colorWipe(strip.Color(  0, 255,   0)     , 100); // Green
+  colorWipe(strip.Color(  0, 255,   0)     , 15); // Green
   updateScreen();
-  colorWipe(strip.Color(  0,   0, 255)     , 100); // Blue
+  colorWipe(strip.Color(  0,   0, 255)     , 15); // Blue
   updateScreen();
+
+//  // 0x01 long press(1s), 0x02 press
+//  if(M5.Axp.GetBtnPress() == 0x02) 
+//  {
+//        // close voltage output
+//        //M5.Axp.PowerOff();
+//        //M5.Axp.SetSleep(); 
+//        //output5v_ctrl(true);
+//  }
 }
 
 void updateScreen(){
@@ -129,11 +139,3 @@ void theaterChaseRainbow(int wait) {
     }
   }
 }
-
-void SetChargingCurrent( uint8_t CurrentLevel )
-{
-  Wire1.beginTransmission(0x34);
-  Wire1.write(0x33);
-  Wire1.write(0xC0 | ( CurrentLevel & 0x0f));
-  Wire1.endTransmission();
-} 
