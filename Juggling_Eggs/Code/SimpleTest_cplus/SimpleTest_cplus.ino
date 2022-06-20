@@ -1,5 +1,5 @@
 #include <M5StickCPlus.h>
-//#include "AXP192.h"
+#include "AXP192.h"
 #include <Adafruit_NeoPixel.h>
 
 #define LED_PIN G0
@@ -13,7 +13,7 @@ void setup() {
   
   // initialize the M5StickC object
   M5.begin();
-  //M5.Axp.SetChargeCurrent(CURRENT_450MA);
+  M5.Axp.SetChargeCurrent(CURRENT_450MA);
   //M5.Axp.EnableCoulombcounter();
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
