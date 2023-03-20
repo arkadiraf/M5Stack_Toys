@@ -13,8 +13,9 @@ void setup() {
   
   // initialize the M5StickC object
   M5.begin();
+  M5.IMU.Init();
   M5.Axp.Write1Byte(0x33, 0x84); // default 0xc0,  0x84 4.1v 450ma
-  //M5.Axp.SetChargeCurrent(CURRENT_450MA);
+  //M5.Axp.SetChargeCurrent(CURRENT_450MA); // present in header file of m5stick-c
   //M5.Axp.EnableCoulombcounter();
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
@@ -36,21 +37,39 @@ void setup() {
 // the loop routine runs over and over again forever
 void loop(){
   M5.update();
-  colorWipe(strip.Color(255,   0,   0)     , 15); // Red
-  updateScreen();
-  colorWipe(strip.Color(  0, 255,   0)     , 15); // Green
-  updateScreen();
-  colorWipe(strip.Color(  0,   0, 255)     , 15); // Blue
-  updateScreen();
+  // Read accelerometer data
+  float ax, ay, az;
+  M5.IMU.getAccelData(&ax, &ay, &az);
 
-//  // 0x01 long press(1s), 0x02 press
-//  if(M5.Axp.GetBtnPress() == 0x02) 
-//  {
-//        // close voltage output
-//        //M5.Axp.PowerOff();
-//        //M5.Axp.SetSleep(); 
-//        //output5v_ctrl(true);
-//  }
+  // Read gyroscope data
+  float gx, gy, gz;
+  M5.IMU.getGyroData(&gx, &gy, &gz);
+
+  
+  
+//  colorWipe(strip.Color(255,   0,   0)     , 15); // Red
+//  updateScreen();
+//  colorWipe(strip.Color(  0, 255,   0)     , 15); // Green
+//  updateScreen();
+//  colorWipe(strip.Color(  0,   0, 255)     , 15); // Blue
+//  updateScreen();
+
+  // Print the data to the serial monitor
+  Serial.print("Acc: ");
+  Serial.print(ax);
+  Serial.print(", ");
+  Serial.print(ay);
+  Serial.print(", ");
+  Serial.print(az);
+  Serial.print("  Gyr: ");
+  Serial.print(gx);
+  Serial.print(", ");
+  Serial.print(gy);
+  Serial.print(", ");
+  Serial.println(gz);
+
+  // Wait a short time before reading the sensor again
+  delay(10);
 }
 
 void updateScreen(){
