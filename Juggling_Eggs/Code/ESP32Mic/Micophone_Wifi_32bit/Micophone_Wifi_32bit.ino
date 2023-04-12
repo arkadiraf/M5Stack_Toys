@@ -3,8 +3,8 @@
 #include <WiFi.h>
 
 // Set these to your desired credentials.
-const char* ssid     = "AndroidAP1b9e";
-const char* password = "ktrh5430";
+const char* ssid     = "";
+const char* password = "";
 
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
