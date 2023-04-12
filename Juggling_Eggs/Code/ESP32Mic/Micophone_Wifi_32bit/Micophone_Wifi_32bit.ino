@@ -18,7 +18,7 @@ bool buttonPressed = false;
 #define LED_BUILTIN 10   // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
 #define NUM_SAMPLES 512
 #define BYTES_PER_SAMPLE 4
-#define SAMPLE_RATE 24000
+#define SAMPLE_RATE 44100
 #define PIN_CLK     0
 #define PIN_DATA    34
 #define READ_LEN    (BYTES_PER_SAMPLE * NUM_SAMPLES)
@@ -30,11 +30,12 @@ void mic_record_task(void *arg) {
     size_t bytesread;
     while (1) {
         i2s_read(I2S_NUM_0, (char *)BUFFER, READ_LEN, &bytesread,(20 / portTICK_RATE_MS));
- 
-        if ((ifConnected) && (ifSending)){
-          client.write(BUFFER,READ_LEN);
+        if (bytesread!=READ_LEN){
+          printf("i2s%d\n",int(bytesread));
         }
-        vTaskDelay(20 / portTICK_RATE_MS);
+        if ((ifConnected) && (ifSending)){
+          client.write(BUFFER,bytesread);
+        }
     }
 }
 
@@ -43,7 +44,7 @@ void i2sInit() {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),
         .sample_rate = SAMPLE_RATE, //44100
         .bits_per_sample =
-            I2S_BITS_PER_SAMPLE_24BIT,  // is fixed at 12bit, stereo, MSB
+            I2S_BITS_PER_SAMPLE_32BIT,  // is fixed at 12bit, stereo, MSB
         .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
 #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
         .communication_format = I2S_COMM_FORMAT_STAND_I2S,
@@ -68,7 +69,7 @@ void i2sInit() {
 
     i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
     i2s_set_pin(I2S_NUM_0, &pin_config);
-    i2s_set_clk(I2S_NUM_0, SAMPLE_RATE, I2S_BITS_PER_SAMPLE_24BIT, I2S_CHANNEL_MONO); //44100
+    i2s_set_clk(I2S_NUM_0, SAMPLE_RATE, I2S_BITS_PER_SAMPLE_32BIT, I2S_CHANNEL_MONO); //44100
 }
 
 void setup() {
@@ -128,7 +129,7 @@ void loop() {
       M5.Lcd.print(WiFi.localIP());
     }else if (!client.connected()) {
       // try to connect to the target ip
-      if (!client.connect("192.168.0.105", httpPort)) {
+      if (!client.connect("192.168.86.58", httpPort)) {
         Serial.println("connection to client failed");
         ifConnected = false;
         // try to recconnect to network

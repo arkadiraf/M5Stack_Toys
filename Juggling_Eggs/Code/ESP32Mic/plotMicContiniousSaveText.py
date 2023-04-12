@@ -7,7 +7,7 @@ import numpy as np
 import sys
 
 class TCPServer:
-    def __init__(self, host = "192.168.0.105", port = 65432, timeout=1):
+    def __init__(self, host = "192.168.86.58", port = 65432, timeout=1):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,7 +39,7 @@ class TCPServer:
 
         # Thread for sending input from keyboard
         send_thread = threading.Thread(target=self._send_data, daemon=True)
-        send_thread.start()
+        #send_thread.start()
 
     def stop(self):
         self.is_running = False
@@ -68,7 +68,7 @@ class TCPServer:
         while self.is_running:
             if self.client_socket:
                 try:
-                    data = self.client_socket.recv(1024*2) #1024
+                    data = self.client_socket.recv(32768) #1024
                     if not data:
                         break
                     #numbers = struct.unpack("<" + "h" * (len(data) // 2), data)
@@ -83,7 +83,6 @@ class TCPServer:
                 except ConnectionResetError:
                     print("\nConnection with client reset.")
                     self.client_socket = None
-            time.sleep(0.005)
 
     def _send_data(self):
         while self.is_running:
@@ -96,7 +95,7 @@ class TCPServer:
                 except ConnectionResetError:
                     print("\nConnection with client reset.")
                     self.client_socket = None
-            time.sleep(0.01)
+            time.sleep(0.05)
 
     def update_plot(self):
         self.ax.clear()
