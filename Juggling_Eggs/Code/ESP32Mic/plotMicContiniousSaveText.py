@@ -7,7 +7,7 @@ import numpy as np
 import sys
 
 class TCPServer:
-    def __init__(self, host = "192.168.86.58", port = 65432, timeout=1):
+    def __init__(self, host = "192.168.0.100", port = 65432, timeout=1):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -100,7 +100,7 @@ class TCPServer:
     def update_plot(self):
         self.ax.clear()
         self.ax.plot(self.plot_data)
-        plt.pause(0.01)
+        plt.pause(0.05)
 
     def _handle_close(self, evt):
         self.stop()
