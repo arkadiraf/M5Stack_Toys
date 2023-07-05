@@ -15,8 +15,8 @@ void setup() {
   M5.begin();
   M5.IMU.Init();
   M5.Axp.Write1Byte(0x33, 0x84); // default 0xc0,  0x84 4.1v 450ma
-  //M5.Axp.SetChargeCurrent(CURRENT_450MA); // present in header file of m5stick-c
-  //M5.Axp.EnableCoulombcounter();
+  M5.Axp.SetChargeCurrent(CURRENT_450MA); // present in header file of m5stick-c
+  M5.Axp.EnableCoulombcounter();
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);

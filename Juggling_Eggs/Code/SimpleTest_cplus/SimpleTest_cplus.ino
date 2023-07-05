@@ -7,10 +7,8 @@
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 100 // should not exceed 150, single color draw at 250-300 ma (max output limit of 400 ma SGM6603 datasheet)
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-
 // the setup routine runs once when M5StickC starts up
 void setup() {
-  
   // initialize the M5StickC object
   M5.begin();
   M5.Axp.Write1Byte(0x33, 0x84); // default 0xc0,  0x84 4.1v 450ma
@@ -36,11 +34,11 @@ void setup() {
 // the loop routine runs over and over again forever
 void loop(){
   M5.update();
-  colorWipe(strip.Color(255,   0,   0)     , 15); // Red
+  colorWipe(strip.Color(255,   0,   0)     , 25); // Red
   updateScreen();
-  colorWipe(strip.Color(  0, 255,   0)     , 15); // Green
+  colorWipe(strip.Color(  0, 255,   0)     , 25); // Green
   updateScreen();
-  colorWipe(strip.Color(  0,   0, 255)     , 15); // Blue
+  colorWipe(strip.Color(  0,   0, 255)     , 25); // Blue
   updateScreen();
 
 //  // 0x01 long press(1s), 0x02 press
@@ -63,6 +61,7 @@ void updateScreen(){
   M5.Lcd.printf("%.2fV",M5.Axp.GetBatVoltage());
   M5.Lcd.setCursor(10,40);
   M5.Lcd.printf("%.2fmA",M5.Axp.GetBatCurrent());
+  Serial.printf("%.2fmA,%.2fV\r\n",M5.Axp.GetBatCurrent(),M5.Axp.GetBatVoltage()); 
 }
 // Some functions of our own for creating animated effects -----------------
 
