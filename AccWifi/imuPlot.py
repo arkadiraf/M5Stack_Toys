@@ -2,6 +2,7 @@ import socket
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from collections import deque
+import datetime
 
 # Configuration
 HOST = '192.168.4.1'  # IP address of the M5StickC Plus (Wi-Fi AP)
@@ -35,6 +36,13 @@ def main():
         # Buffer to store incomplete data
         buffer = ''
 
+        # Open log file
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        log_filename = f'accelerometer_log_{timestamp}.csv'
+        log_file = open(log_filename, 'w')
+        # Write header
+        log_file.write('time,x,y,z\n')
+
         def update_plot(frame):
             nonlocal buffer
             try:
@@ -59,6 +67,9 @@ def main():
                         x_data.append(x)
                         y_data.append(y)
                         z_data.append(z)
+                        # Log data to file
+                        log_file.write(f'{t},{x},{y},{z}\n')
+                        log_file.flush()
                     except ValueError:
                         # Handle incomplete or invalid lines
                         continue
@@ -85,6 +96,9 @@ def main():
     finally:
         client_socket.close()
         print("Connection closed.")
+        # Close log file
+        log_file.close()
+        print(f"Data logged to {log_filename}")
 
 if __name__ == "__main__":
     main()
